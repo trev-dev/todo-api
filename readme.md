@@ -5,9 +5,9 @@ _A very simple API for using a cloud based to-do list_
 [Check it out here](https://trevdev-todo-api.herokuapp.com/)
 
 ### API Endpoints
-GET:
-/todos - Get all items on the todo list
-/todos/id - Get specific todo item by id (Eg. todos/2)
+#### GET:
+* /todos - Get all items on the todo list
+* /todos/id - Get specific todo item by id (Eg. todos/2)
 
 ### TODO (lol)
 
