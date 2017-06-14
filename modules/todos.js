@@ -1,7 +1,7 @@
 var todos = [
     {
         id: 1,
-        description: "Scratch mah nuts",
+        description: "Feed the dog",
         completed: false
     },
     {
@@ -13,6 +13,20 @@ var todos = [
         id: 3,
         description: "Eat something",
         completed: true
+    },
+    {
+
+        id: 4,
+        description: "Drink more coffee",
+        completed: true
+
+    },
+    {
+
+        id: 5,
+        description: "Finish this api",
+        completed: false
+
     }
 ];
 
