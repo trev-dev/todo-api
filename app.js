@@ -1,14 +1,13 @@
+/* jshint esversion: 6 */
 var express = require('express');
-
 var app = express();
+
+var routes = require('./modules/routes');
+
 
 var PORT = process.env.PORT || 3000;
 
-app.get('/', function(req, res){
-
-    res.send('Todo Root');
-
-});
+routes(app);
 
 app.listen(PORT, function(){
 
