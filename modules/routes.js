@@ -2,6 +2,9 @@
 
 module.exports = function(app) {
     var todos = require('../modules/todos');
+    var bodyParser = require('body-parser');
+
+    app.use(bodyParser.json());
 
     app.get('/', function(req, res){
 
@@ -11,17 +14,17 @@ module.exports = function(app) {
 
     app.get('/todos', function(req, res) {
 
-        res.json(todos);
+        res.json(todos.items);
 
     });
 
     app.get('/todos/:id', function(req, res, next){
         var todo = function() {
 
-            for (var index = 0; index < todos.length; index++) {
-                if (todos[index].id == req.params.id) {
+            for (var index = 0; index < todos.items.length; index++) {
+                if (todos.items[index].id == req.params.id) {
 
-                    return todos[index];
+                    return todos.items[index];
 
                 }
             }
@@ -29,6 +32,16 @@ module.exports = function(app) {
         }();
 
         todo ? res.json(todo) : next();
+
+    });
+
+    app.post('/todos', function(req, res){
+
+        todo = req.body;
+        todo.id = todos.todoNext;
+        todos.todoNext++;
+        todos.items.push(todo);
+        res.json(todo);
 
     });
 
