@@ -7,6 +7,12 @@ module.exports = function(app) {
 
     app.use(bodyParser.json());
 
+    app.use('/', function(req, res, next){
+
+        console.log(req.method, req.path, req.body);
+        next();
+
+    });
     app.get('/', function(req, res){
 
         res.send('Todo Root');
@@ -14,8 +20,36 @@ module.exports = function(app) {
     });
 
     app.get('/todos', function(req, res) {
+        var filtered = todos.items;
 
-        res.json(todos.items);
+        if (req.query.completed == "true") {
+
+            filtered = _.where(filtered, {completed:true});
+
+        } else {
+
+            filtered = _.where(filtered, {completed:false});
+
+        }
+
+        if (req.query.q) {
+
+            filtered = _.filter(filtered, function(todo){
+
+                return todo.description.toLowerCase().indexOf(req.query.q.toLowerCase()) > -1;
+
+            });
+
+        }
+
+
+        res.json(filtered);
+
+    });
+
+    app.get('/todos/completed', function(req, res){
+        
+        res.json(_.where(todos.items, {completed:true}));
 
     });
 
