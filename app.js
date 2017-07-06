@@ -1,17 +1,21 @@
 /* jshint esversion: 6 */
 var express = require('express');
 var app = express();
+var db = require(`${__dirname}/modules/db.js`);
 
-var routes = require('./modules/routes');
+var routes = require(`${__dirname}/modules/routes`);
 
 
 var PORT = process.env.PORT || 3000;
 
-routes(app);
+routes(app, db);
 
-app.listen(PORT, function(){
+db.sql.sync().then(function(){
 
-    console.log(`Server running on port ${PORT}`);
+    app.listen(PORT, function(){
+
+        console.log(`Server running on port ${PORT}`);
     
 
+    });
 });
