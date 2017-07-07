@@ -25,6 +25,6 @@ _Search parameters_
 
 ### TODO (lol)
 
-- [ ] Convert static object of todo items into a database.
+- [x] Convert static object of todo items into a database.
 - [x] Add the ability to add/remove/modify todo items
 - [ ] Add user authentication/independant todo lists (maybe)
