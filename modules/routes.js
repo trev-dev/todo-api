@@ -104,57 +104,14 @@ module.exports = function(app, db) {
     });
 
     app.put('/todos/:id', function(req, res, next){
-        // var todo = _.findWhere(todos.items, {id: parseInt(req.params.id)});
-        // var body = _.pick(req.body, 'description', 'completed');
-        // if (body.description){ body.description = body.description.trim(); }
-        // var valid = {};
 
-        // if (todo) {
-
-        //      if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
-
-        //         valid.completed = body.completed;
-
-        //     } else if (body.hasOwnProperty('completed')) {
-
-        //         return res.status(400).json({error: "Completed status must be a boolean"});
-
-        //     } else {
-
-        //         // Completed value not set
-
-        //     }
-
-        //     if (body.hasOwnProperty('description') && body.description.length > 0) {
-
-        //         valid.description = body.description;
-
-        //     } else if (body.hasOwnProperty('description')) {
-
-        //         return res.status(400).json({error: "Description should not be empty"});
-
-        //     } else {
-
-        //         // No Description
-
-        //     }
-
-        //     _.extend(todo, valid);
-        //     res.json(todo);
-     
-
-        // } else {
-
-        //     next();
-
-        // }
         var body = _.pick(req.body, 'description', 'completed');
         console.log(body);
         db.todo.update(body, {where: {
             id: parseInt(req.params.id)
         }}).then(function(update){
             console.log(update);
-            
+
             update[0] ? res.json({success: "Todo Updated"}) : next();
 
         }).catch(function(error){
