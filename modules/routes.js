@@ -1,9 +1,9 @@
 /* jshint esversion: 6 */
 
 module.exports = function(app, db) {
-    var todos = require('./todos');
     var bodyParser = require('body-parser');
     var _ = require('underscore');
+    var crypt = require('./passwords.js');
 
     app.use(bodyParser.json());
 
@@ -18,6 +18,8 @@ module.exports = function(app, db) {
         res.send('Todo Root');
 
     });
+
+    // TODO LIST ROUTES
 
     app.get('/todos', function(req, res, next) {
         var query = {};
@@ -106,7 +108,6 @@ module.exports = function(app, db) {
     app.put('/todos/:id', function(req, res, next){
 
         var body = _.pick(req.body, 'description', 'completed');
-        console.log(body);
         db.todo.update(body, {where: {
             id: parseInt(req.params.id)
         }}).then(function(update){
@@ -120,6 +121,43 @@ module.exports = function(app, db) {
 
         });
        
+    });
+
+    // USERS ROUTES
+
+    app.post('/users', function(req, res, next){
+
+        var body = _.pick(req.body, 'email', 'password');
+        body.email = body.email.toLowerCase();
+
+        db.user.create(body).then(function(user){
+
+            res.json(`User Created: ${user.toJSON().email}`);
+
+        }).catch(function(error){
+
+            res.json(error);
+
+        });
+
+    });
+
+    app.post('/users/login', function(req, res, next){
+
+        var body = _.pick(req.body, 'email', 'password');
+        body.email = body.email.toLowerCase().trim();
+
+        db.user.auth(body).then(function(resp){
+
+            res.json(resp.publicJSON());
+
+        }).catch(function(err){
+            
+            res.status(401).json({error: 'Not authorized. Incorrect email/password combination'});
+
+        });
+
+
     });
 
     app.use(function(req, res){

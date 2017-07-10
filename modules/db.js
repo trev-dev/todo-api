@@ -22,7 +22,8 @@ if (env === 'production') {
 
 module.exports = {
 
-    todo: sql.import(`../models/dbmodels.js`),
+    todo: sql.import(`../models/todo.js`),
+    user: sql.import('../models/user.js'),
     sql: sql,
     Sequelize: Sequelize
 
