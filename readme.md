@@ -27,7 +27,8 @@ _Search parameters_
 
 - [x] Convert static object of todo items into a database.
 - [x] Add the ability to add/remove/modify todo items
-- [ ] Add user authentication/independant todo lists (maybe)
+- [ ] Add user authentication - _started. Creation + login exists, doesn't do much_
+- [ ] Use tokens to access specific user todos
 
 ### A note on Databases
 This app is setup to use postgres on the live server (heroku). If you clone or download this git and run NPM install, it should work locally using sqlite.
