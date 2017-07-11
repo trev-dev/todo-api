@@ -148,8 +148,10 @@ module.exports = function(app, db) {
         body.email = body.email.toLowerCase().trim();
 
         db.user.auth(body).then(function(resp){
+            var token = resp.generateToken('authentication');
 
-            res.json(resp.publicJSON());
+            if (token) {res.header('Auth', token).json(resp.publicJSON());}
+            
 
         }).catch(function(err){
             

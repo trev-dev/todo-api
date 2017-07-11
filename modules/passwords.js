@@ -33,6 +33,15 @@ module.exports = {
         return credentials;
 
     },
+    decrypt: function(input, key) {
+
+        var decipher = crypto.createDecipher(alg, key)
+        var dec = decipher.update(input,'hex','utf8')
+        dec += decipher.final('utf8');
+        return dec;
+
+
+    },
     compare: function(data, input) {
         /* Accepts two paramaters: Database Result and User Input  */
         var creds = this.encrypt(input, data.key);

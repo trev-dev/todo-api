@@ -1,5 +1,6 @@
 var crypt = require('../modules/passwords.js');
 var _ = require('underscore');
+var jwt = require('jsonwebtoken');
 
 module.exports = function(sql, DataTypes) {
 
@@ -45,6 +46,32 @@ module.exports = function(sql, DataTypes) {
     user.prototype.publicJSON = function() {
         
         return _.pick(this, 'email', 'id');
+
+    };
+
+    user.prototype.generateToken = function(type) {
+
+        if (!type) {
+
+            return undefined;
+
+        }
+
+        try {
+
+            var cryptString = crypt.encrypt(JSON.stringify({id: this.id, type: type}), type);
+            
+            var token = jwt.sign({
+                token: cryptString
+            }, 'SnickerD00dle3');
+
+            return token;
+
+        } catch (e) {
+
+            return undefined;
+
+        }
 
     };
 
