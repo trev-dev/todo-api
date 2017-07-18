@@ -1,4 +1,4 @@
-var crypt = require('../modules/passwords.js');
+var crypt = require('../modules/passwords.js')();
 var _ = require('underscore');
 var jwt = require('jsonwebtoken');
 
@@ -118,6 +118,42 @@ module.exports = function(sql, DataTypes) {
 
         });
 
+    };
+
+    user.findByToken = function(token) {
+        return new Promise(function(resolve, reject){
+            try {
+
+                var decodedJWT = jwt.verify(token, 'SnickerD00dle3');
+                var decodedString = crypt.decrypt(decodedJWT.token.password, decodedJWT.token.key);
+                tokenData = JSON.parse(decodedString);
+                console.log(tokenData);
+                
+                user.findById(tokenData.id).then(function(resp){
+
+                    if (resp) {
+
+                        resolve(resp);
+
+                    } else {
+
+                        reject();
+
+                    }
+
+                }).catch(function(err){
+
+                    reject();
+
+                });
+
+            } catch (e) {
+
+                reject();
+
+            }
+
+        });
     };
 
     return user;

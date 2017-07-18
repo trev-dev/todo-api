@@ -3,8 +3,7 @@
 module.exports = function(app, db) {
     var bodyParser = require('body-parser');
     var _ = require('underscore');
-    var crypt = require('./passwords.js');
-
+    var crypt = require('./passwords.js')(db);
     app.use(bodyParser.json());
 
     app.use('/', function(req, res, next){
@@ -21,7 +20,7 @@ module.exports = function(app, db) {
 
     // TODO LIST ROUTES
 
-    app.get('/todos', function(req, res, next) {
+    app.get('/todos', crypt.requireAuth, function(req, res, next) {
         var query = {};
 
         query.completed = req.query.completed == "true" ? true : false;
@@ -39,7 +38,7 @@ module.exports = function(app, db) {
 
     });
 
-    app.get('/todos/completed', function(req, res, next){
+    app.get('/todos/completed', crypt.requireAuth, function(req, res, next){
         
         db.todo.findAll({where: {
             completed: true
@@ -55,7 +54,7 @@ module.exports = function(app, db) {
 
     });
 
-    app.get('/todos/:id', function(req, res, next){
+    app.get('/todos/:id', crypt.requireAuth, function(req, res, next){
 
         db.todo.findById(parseInt(req.params.id)).then(function(todo){
 
@@ -69,7 +68,7 @@ module.exports = function(app, db) {
 
     });
 
-    app.post('/todos', function(req, res){
+    app.post('/todos', crypt.requireAuth, function(req, res){
 
         var body = _.pick(req.body, 'description', 'completed');
         body.description = body.description.trim();
@@ -86,7 +85,7 @@ module.exports = function(app, db) {
 
     });
 
-    app.delete('/todos/:id', function(req, res, next){
+    app.delete('/todos/:id', crypt.requireAuth, function(req, res, next){
  
         db.todo.destroy({
             where: {
@@ -105,7 +104,7 @@ module.exports = function(app, db) {
 
     });
 
-    app.put('/todos/:id', function(req, res, next){
+    app.put('/todos/:id', crypt.requireAuth, function(req, res, next){
 
         var body = _.pick(req.body, 'description', 'completed');
         db.todo.update(body, {where: {

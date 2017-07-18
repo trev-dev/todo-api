@@ -1,4 +1,5 @@
 var crypto = require('crypto');
+var db = require('./db.js');
 
 var alg = 'aes-256-ctr';
 
@@ -18,35 +19,54 @@ function keyGen() {
 
 }
 
-module.exports = {
-
-    encrypt: function(input, key) {
-        // Generates a credentials object using a user input and a key. If no key is provided, one is generated.
-        var credentials = {}
-        key = key || keyGen();
-
-        var cipher = crypto.createCipher(alg, key);
-        var crypted = cipher.update(input, 'utf8', 'hex');
-        crypted += cipher.final('hex');
-        credentials.key = key;
-        credentials.password = crypted;
-        return credentials;
-
-    },
-    decrypt: function(input, key) {
-
-        var decipher = crypto.createDecipher(alg, key)
-        var dec = decipher.update(input,'hex','utf8')
-        dec += decipher.final('utf8');
-        return dec;
+module.exports = function(db) {
 
 
-    },
-    compare: function(data, input) {
-        /* Accepts two paramaters: Database Result and User Input  */
-        var creds = this.encrypt(input, data.key);
-        return creds.password == data.hash;
+    return {
+        encrypt: function(input, key) {
+            // Generates a credentials object using a user input and a key. If no key is provided, one is generated.
+            var credentials = {}
+            key = key || keyGen();
+
+            var cipher = crypto.createCipher(alg, key);
+            var crypted = cipher.update(input, 'utf8', 'hex');
+            crypted += cipher.final('hex');
+            credentials.key = key;
+            credentials.password = crypted;
+            return credentials;
+
+        },
+        decrypt: function(input, key) {
+
+            var decipher = crypto.createDecipher(alg, key)
+            var dec = decipher.update(input,'hex','utf8')
+            dec += decipher.final('utf8');
+            return dec;
+
+
+        },
+        compare: function(data, input) {
+            /* Accepts two paramaters: Database Result and User Input  */
+            var creds = this.encrypt(input, data.key);
+            return creds.password == data.hash;
+
+        },
+
+        requireAuth: function(req, res, next) {
+            var token = req.get('Auth');
+
+            db.user.findByToken(token).then(function(user){
+
+                req.user = user;
+                next();
+
+            }).catch(function(err){
+
+                res.status(401).send();
+
+            });
+
+        }
 
     }
-
 }
