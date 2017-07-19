@@ -10,7 +10,7 @@ var PORT = process.env.PORT || 3000;
 
 routes(app, db);
 
-db.sql.sync({force: true}).then(function(){
+db.sql.sync().then(function(){
 
     app.listen(PORT, function(){
 
