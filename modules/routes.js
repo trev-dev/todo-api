@@ -157,13 +157,19 @@ module.exports = function(app, db) {
     app.post('/users/login', function(req, res, next){
 
         var body = _.pick(req.body, 'email', 'password');
+        var userInstance;
         body.email = body.email.toLowerCase().trim();
 
         db.user.auth(body).then(function(resp){
             var token = resp.generateToken('authentication');
-
-            if (token) {res.header('Auth', token).json(resp.publicJSON());}
+            userInstance = resp;
+            return db.token.create({token: token});
+            // if (token) {res.header('Auth', token).json(resp.publicJSON());}
             
+
+        }).then(function(token){
+
+            res.header('Auth', token.token).json(userInstance.publicJSON());
 
         }).catch(function(err){
             
@@ -171,6 +177,18 @@ module.exports = function(app, db) {
 
         });
 
+
+    });
+
+    app.delete('/users/login', crypt.requireAuth, function(req, res){
+
+        req.token.destroy().then(function(){
+            res.status(204).json({success: 'Logout Successful'});
+        }).catch(function(){
+
+            res.status(500).send();
+
+        });
 
     });
 

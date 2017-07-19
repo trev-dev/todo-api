@@ -19,23 +19,25 @@ function keyGen() {
 
 }
 
+function encrypt(input, key) {
+
+        var credentials = {}
+        key = key || keyGen();
+
+        var cipher = crypto.createCipher(alg, key);
+        var crypted = cipher.update(input, 'utf8', 'hex');
+        crypted += cipher.final('hex');
+        credentials.key = key;
+        credentials.password = crypted;
+        return credentials;
+
+}
+
 module.exports = function(db) {
 
 
     return {
-        encrypt: function(input, key) {
-            // Generates a credentials object using a user input and a key. If no key is provided, one is generated.
-            var credentials = {}
-            key = key || keyGen();
-
-            var cipher = crypto.createCipher(alg, key);
-            var crypted = cipher.update(input, 'utf8', 'hex');
-            crypted += cipher.final('hex');
-            credentials.key = key;
-            credentials.password = crypted;
-            return credentials;
-
-        },
+        encrypt: encrypt,
         decrypt: function(input, key) {
 
             var decipher = crypto.createDecipher(alg, key)
@@ -53,9 +55,22 @@ module.exports = function(db) {
         },
 
         requireAuth: function(req, res, next) {
-            var token = req.get('Auth');
+            var token = req.get('Auth') || 'null';
+            var tokenHash = encrypt(token, token);
 
-            db.user.findByToken(token).then(function(user){
+            db.token.findOne({where: {
+                hash: tokenHash.password
+            }}).then(function(resp){
+
+                if (!resp) {
+
+                    throw new Error();
+
+                }
+                req.token = resp;
+                return db.user.findByToken(token);
+
+            }).then(function(user){
 
                 req.user = user;
                 next();

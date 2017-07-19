@@ -22,6 +22,7 @@ var db = {
 
     todo: sql.import(`../models/todo.js`),
     user: sql.import('../models/user.js'),
+    token: sql.import('../models/token.js'),
     sql: sql,
     Sequelize: Sequelize
 
