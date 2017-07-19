@@ -14,13 +14,6 @@ module.exports = function(sql, DataTypes) {
             allowNull: false,
             defaultValue: false
 
-        },
-        userid: {
-
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: -1
-
         }
 
     });

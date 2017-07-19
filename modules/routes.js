@@ -21,8 +21,7 @@ module.exports = function(app, db) {
     // TODO LIST ROUTES
 
     app.get('/todos', crypt.requireAuth, function(req, res, next) {
-        var query = {};
-
+        var query = {userId: req.user.id};
         query.completed = req.query.completed == "true" ? true : false;
         if (req.query.q) { query.description = { $like: `%${req.query.q}%` }; }
         
@@ -41,7 +40,8 @@ module.exports = function(app, db) {
     app.get('/todos/completed', crypt.requireAuth, function(req, res, next){
         
         db.todo.findAll({where: {
-            completed: true
+            completed: true,
+            userId: req.user.id
         }}).then(function(todos){
 
             todos ? res.json(todos) : next();
@@ -56,7 +56,10 @@ module.exports = function(app, db) {
 
     app.get('/todos/:id', crypt.requireAuth, function(req, res, next){
 
-        db.todo.findById(parseInt(req.params.id)).then(function(todo){
+        db.todo.findOne({where: {
+            id: parseInt(req.params.id),
+            userId: req.user.id
+        }}).then(function(todo){
 
             todo ? res.json(todo.toJSON()) : next();
 
@@ -74,8 +77,16 @@ module.exports = function(app, db) {
         body.description = body.description.trim();
 
         db.todo.create(body).then(function(todo){
+            req.user.addTodo(todo).then(function(){
 
-            res.json(todo.toJSON());
+                return todo.reload();
+
+            }).then(function(todo){
+
+                res.json(todo.toJSON());
+
+            });
+            // res.json(todo.toJSON());
 
         }).catch(function(error){
 
@@ -89,7 +100,8 @@ module.exports = function(app, db) {
  
         db.todo.destroy({
             where: {
-                id: parseInt(req.params.id)
+                id: parseInt(req.params.id),
+                userId: req.user.id
             }
         }).then(function(deleted){
 
@@ -108,7 +120,8 @@ module.exports = function(app, db) {
 
         var body = _.pick(req.body, 'description', 'completed');
         db.todo.update(body, {where: {
-            id: parseInt(req.params.id)
+            id: parseInt(req.params.id),
+            userId: req.user.id
         }}).then(function(update){
             console.log(update);
 

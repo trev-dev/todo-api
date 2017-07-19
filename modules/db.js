@@ -18,9 +18,7 @@ if (env === 'production') {
 
 }
 
-
-
-module.exports = {
+var db = {
 
     todo: sql.import(`../models/todo.js`),
     user: sql.import('../models/user.js'),
@@ -28,3 +26,8 @@ module.exports = {
     Sequelize: Sequelize
 
 }
+
+db.todo.belongsTo(db.user);
+db.user.hasMany(db.todo);
+
+module.exports = db
