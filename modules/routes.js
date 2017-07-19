@@ -172,7 +172,7 @@ module.exports = function(app, db) {
             res.header('Auth', token.token).json(userInstance.publicJSON());
 
         }).catch(function(err){
-            
+            console.log(err);
             res.status(401).json({error: 'Not authorized. Incorrect email/password combination'});
 
         });
