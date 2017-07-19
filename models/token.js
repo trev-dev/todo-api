@@ -19,7 +19,10 @@ module.exports = function(sql, DataTypes){
             }
 
         }, 
-        hash: DataTypes.STRING
+        hash: {
+            type: DataTypes.STRING(1999),
+            allowNull: false
+        }
 
     });
 
